@@ -8,11 +8,11 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/overall-hardware-structure.png}
-    \caption{\label{fig:overall-hardware-structure}Overall Hardware Structure}
+    \caption{\label{fig:overall-hardware-structure}整体硬件架构}
 \end{figure}
 
 为了使以上叙述更加清晰明了，以下列出并描述了位于手部的各硬件组件：
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
 \item 每个指尖上都有一个9轴运动传感器
 \item 手背上有一个磁铁（产生用于计算手指相对位置的磁场）
 \item 手背上有一个6轴惯性传感器（IMU）
@@ -24,7 +24,7 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/abstract-hardware-model.png}
-    \caption{\label{fig:abstract-hardware-model}Abstract Hardware Model}
+    \caption{\label{fig:abstract-hardware-model}抽象硬件模型}
 \end{figure}
 
 针对多个传感器数据的采集，可以考虑使用I2C总线协议。\autoref{fig:connection-using-i2c-bus-protocol}展示了一种可行的传感器连接方式（\autoref{fig:connection-using-i2c-bus-protocol}中的传感器为ICM20948 9轴传感器）
@@ -32,23 +32,23 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/connection-using-i2c-bus-protocol.png}
-    \caption{\label{fig:connection-using-i2c-bus-protocol}Connection Scheme Using I2C Bus Protocol}
+    \caption{\label{fig:connection-using-i2c-bus-protocol}I2C总线连接示意图}
 \end{figure}
 
 其中，每条I2C总线上连有两个相同的ICM20948传感器（I2C地址的最低位可以通过传感器上的某个特定管脚进行调整，故同一条I2C总线上最多可以容纳2个相同的传感器），总共需要3条I2C总线来对6个传感器进行数据读取。
 
 \subsection{整体软件架构}
 
-如\autoref{fig:connection-using-i2c-bus-protocol}所示，整个软件系统将运行在完整的Linux操作系统上。其中，{\bfseries \itshape enhanced\_icm20948}是自行开发的，包含有本毕业设计项目中很大一部分软件代码的开源库。其通过调用Eclipse基金会开发的{\bfseries \itshape mraa}开源通信库来实现对Linux开发板上I2C总线的访问与读取。
+如\autoref{fig:connection-using-i2c-bus-protocol}所示，整个软件系统将运行在完整的Linux操作系统上。其中，{\bfseries \itshape enhanced\_icm20948}是自行开发的，包含有本文中很大一部分软件代码的开源库。其通过调用Eclipse基金会开发的{\bfseries \itshape mraa}开源通信库来实现对Linux开发板上I2C总线的访问与读取。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{software/overall-library-structure.png}
-    \caption{\label{fig:overall-library-structure}Core Library Overall Structure}
+    \caption{\label{fig:overall-library-structure}核心库整体架构}
 \end{figure}
 
 为了保证手指运动追踪系统计算的实时性与鲁棒性，整个开源库使用C++进行开发以实现最佳性能。如\autoref{fig:library-internal-structure}所示，{\bfseries \itshape enhanced\_icm20948}开源库主要包含3个模块，它们分别为：
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 传感器读取模块}: 负责高速读取各个传感器的数据
     \item {\bfseries 扩展卡尔曼滤波模块}: 负责计算手指端传感器与手背端传感器的相对姿态
     \item {\bfseries Python接口模块}: 通过使用{\bfseries \itshape Pybind11}来为由C++写成的高性能代码提供Python调用接口，以方便后续对数据的处理与深度学习技术的应用
@@ -57,13 +57,13 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\linewidth]{software/library-internal-structure.png}
-    \caption{\label{fig:library-internal-structure}Core Library Internal Structure}
+    \caption{\label{fig:library-internal-structure}核心库内部架构}
 \end{figure}
 
 同时，由于整个开源库均使用标准C++并针对通用Linux内核进行开发，其可以在几乎所有的Linux发行版上正常工作运行。
 
-本毕设项目中的后续应用及相应流程可以总结如下，如\autoref{fig:subsequent-program-structure}所示：
-\begin{enumerate}
+本文中的后续应用及相应流程可以总结如下，如\autoref{fig:subsequent-program-structure}所示：
+\begin{enumerate}[label=(\alph*)]
     \item 使用先前计算得到的相对位置进行动态手指追踪
     \item 使用深度学习技术进行实时手势识别
 \end{enumerate}
@@ -71,12 +71,12 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.4\linewidth]{software/subsequent-program-structure.png}
-    \caption{\label{fig:subsequent-program-structure}Subsequent Dynamic Tracking and Gesture Recognition}
+    \caption{\label{fig:subsequent-program-structure}后续的动态追踪及手势识别流程}
 \end{figure}
 
 \subsection{整体工作流程}
-总体而言，如\autoref{fig:system-overall-workflow}所示，本毕设项目的整体系统按照以下工作流程运作：
-\begin{enumerate}
+总体而言，如\autoref{fig:system-overall-workflow}所示，本文的整体系统按照以下工作流程运作：
+\begin{enumerate}[label=(\alph*)]
     \item 首先，系统将使用扩展卡尔曼滤波（EKF），通过从各个传感器上采集到的加速度计与陀螺仪数据来计算各手指与手背之间的相对姿态
     \item 之后，系统将进一步使用磁偶极子模型与非线性方程组求解器，通过刚刚计算得到的相对姿态与传感器采集到的磁力计数据来解算各手指与手背之间的相对位置坐标
     \item 最后，计算得到的相对位置坐标将被进一步进行处理并应用深度学习技术以实现手指运动追踪与其它相应功能
@@ -85,19 +85,19 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{software/system-overall-workflow.png}
-    \caption{\label{fig:system-overall-workflow}System Overall Workflow}
+    \caption{\label{fig:system-overall-workflow}系统整体工作流程}
 \end{figure}
 
-值得注意的是，本毕设项目中自行开发并使用的核心开源库使用标准的C++进行编写，与多种Linux发行版兼容，使其具有高度的通用性和适应性。在接下来的几章中，本毕业设计项目的整个系统将被划分为4个部分，并进行独立的说明和讨论。
+值得注意的是，本文中自行开发并使用的核心开源库使用标准的C++进行编写，与多种Linux发行版兼容，使其具有高度的通用性和适应性。在接下来的几章中，本文的整个系统将被划分为4个部分，并进行独立的说明和讨论。
 
 \cleardoublepage
 \section{硬件系统设计与构建}
 \subsection{硬件规格与参数}
-本毕设项目使用了各种不同的硬件。将这些不同的硬件设备组合在一起，通过它们之间的相互配合实现特定的功能并完成此毕业设计项目中的任务，实现硬件协同。
-此节将详细描述本毕设项目中所使用的各类硬件的具体参数及规格
+本文使用了各种不同的硬件。将这些不同的硬件设备组合在一起，通过它们之间的相互配合实现特定的功能并完成此文中的任务，实现硬件协同。
+此节将详细描述本文中所使用的各类硬件的具体参数及规格
 \subsubsection{单板计算机}
-本毕设项目中使用固定在手背上的单板计算机（Single Board Computer, SBC）作为核心计算设备。其不仅负责读取来自多个传感器的数据、计算手指传感器与手背传感器之间的相对姿态，同时也负责手指相对于手背位置的计算和自行训练的深度学习手势识别模型的实时推理。
-为能够顺利完成上述的较为复杂的各类计算任务，同时也兼顾可维护性、可拓展性，我最终选取了树莓派4B作为此次毕设项目中的核心计算部件。\autoref{tab:raspberry-pi-spec}是树莓派4B的具体参数与规格：
+本文中使用固定在手背上的单板计算机（Single Board Computer, SBC）作为核心计算设备。其不仅负责读取来自多个传感器的数据、计算手指传感器与手背传感器之间的相对姿态，同时也负责手指相对于手背位置的计算和自行训练的深度学习手势识别模型的实时推理。
+为能够顺利完成上述的较为复杂的各类计算任务，同时也兼顾可维护性、可拓展性，我最终选取了树莓派4B作为本文中的核心计算部件。\autoref{tab:raspberry-pi-spec}是树莓派4B的具体参数与规格：
 \begin{table}[ht]
     \caption{\label{tab:raspberry-pi-spec}Raspberry Pi 4B Hardware Spec}
     \begin{tabularx}{\linewidth}{|c|X<{\centering}|}
@@ -118,12 +118,12 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/raspberry-pi-4b-appearance.png}
-    \caption{\label{fig:raspberry-pi-4b-appearance}Raspberry Pi 4B Appearance}
+    \caption{\label{fig:raspberry-pi-4b-appearance}树莓派4B外观}
 \end{figure}
 
 \subsubsection{传感器}
-ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速度计、三轴陀螺仪和三轴磁力计的功能。本次毕设项目中的全部6个传感器都选择了ICM20948。其通常被认为是MPU9250的升级版（MPU9250现已停产），具有更优秀的性能，能够很好的满足本毕业设计项目中的各项需求。以下是ICM20948传感器的核心参数与规格：
-\begin{enumerate}
+ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速度计、三轴陀螺仪和三轴磁力计的功能。本文中的全部6个传感器都选择了ICM20948。其通常被认为是MPU9250的升级版（MPU9250现已停产），具有更优秀的性能，能够很好的满足本文中的各项需求。以下是ICM20948传感器的核心参数与规格：
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries Accelerometer}:
         \begin{itemize}
             \item Measurement Range: ±2 g, ±4 g, ±8 g, ±16 g
@@ -148,7 +148,7 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 
 
 \subsection{PCB设计与布局}
-在本毕设项目一开始的测试与验证阶段，面包板与杜邦线被直接用于拓展I2C总线并连接相应的传感器，如\autoref{fig:mess-connection}所示。这样的连接有以下几个非常大的问题与缺陷：
+在本文一开始的测试与验证阶段，面包板与杜邦线被直接用于拓展I2C总线并连接相应的传感器，如\autoref{fig:mess-connection}所示。这样的连接有以下几个非常大的问题与缺陷：
 \begin{itemize}
     \item {\bfseries 信号干扰}：杜邦线通常没有屏蔽层，容易受到外部电磁干扰的影响，导致传感器信号的质量下降。这可能导致数据错误或不稳定性能
     \item {\bfseries 接触不可靠}：杜邦线的接触可靠性可能不高，容易出现接触不良或松动的情况。这可能导致传感器数据的不稳定性或中断
@@ -159,7 +159,7 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/mess-connection.png}
-    \caption{\label{fig:mess-connection}Initial Unstable Connection}
+    \caption{\label{fig:mess-connection}初始不稳定连接}
 \end{figure}
 
 为了解决这个问题，及能够通过I2C总线同时完成对6个传感器数据的高速读取并保证整体设备在进行各种运动时的连线稳定，我根据毕业设计的实际需求自行设计并打印了兼容树莓派4B 40Pins引脚的I2C总线扩展板。其电路原理图及布线图分别如\autoref{fig:pcb-schematic}和\autoref{fig:pcb-wiring}所示：
@@ -167,13 +167,13 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{hardware/pcb-schematic.png}
-    \caption{\label{fig:pcb-schematic}PCB Circuit Schematic}
+    \caption{\label{fig:pcb-schematic}PCB板电路图}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{hardware/pcb-wiring.png}
-    \caption{\label{fig:pcb-wiring}PCB Wiring Diagram}
+    \caption{\label{fig:pcb-wiring}PCB板走线图}
 \end{figure}
 
 实物图如\autoref{fig:pcb-appearance}所示（能够与树莓派4B 40Pins引脚紧密插合）。其将树莓派4B上的3条I2C总线进行了扩展，使得每一条I2C总线上能够容纳2个传感器：
@@ -181,12 +181,12 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{hardware/pcb-appearance.png}
-    \caption{\label{fig:pcb-appearance}Designed and Printed PCB Board (Purple)}
+    \caption{\label{fig:pcb-appearance}自行设计并打印的PCB板 (紫色，下接树莓派4B)}
 \end{figure}
 
 同时，得益于PCB设计，整体系统各个部件之间的连接稳定、可靠，为后续的动态手指追踪与实时手势识别提供了良好的硬件支持。
 \subsection{硬件系统构建}
-在本毕设项目中，一个绑定有一块永磁铁、6个传感器、1个单板计算机的手套被作为最终设备进行测试与开发，如\autoref{fig:entire-device-front}和\autoref{fig:entire-device-back}所示。
+在本文中，一个绑定有一块永磁铁、6个传感器、1个单板计算机的手套被作为最终设备进行测试与开发，如\autoref{fig:entire-device-front}和\autoref{fig:entire-device-back}所示。
 其中，圆柱形的永磁体作为磁场源被固定在位于手背的单板计算机上，为使用磁偶极子模型的定位算法提供磁场。
 6个传感器中的5个分别位于手套的5个指尖，另一个同样被固定在位于手背的单板计算上，其紧邻永磁体，为定位算法提供相对位置的参考。
 单板计算机与传感器通过上节中所提到的自行设计打印的PCB扩展板进行桥接，其连接稳定，能够在手指与手进行各种运动变换时正常工作。
@@ -194,27 +194,25 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/entire-device-front.png}
-    \caption{\label{fig:entire-device-front}Final Device (Front View)}
+    \caption{\label{fig:entire-device-front}最终实验设备 (前视图)}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.4\linewidth]{hardware/entire-device-back.png}
-    \caption{\label{fig:entire-device-back}Final Device (Back View)}
+    \caption{\label{fig:entire-device-back}最终实验设备 (后视图)}
 \end{figure}
 
 \cleardoublepage
 \section{核心开源库}
 \subsection{整体介绍}
-{\bfseries 此库的所有代码均由本人编写并已发布在Python社区的官方软件包仓库上：\href{https://pypi.org/project/enhanced-icm20948/}{enhanced-icm20948}}
-
 基于{\textbf \itshape libmraa}，此自行开发的核心开源库，{\textbf \itshape enhanced\_icm20948}，旨在为通用Linux开发板提供从ICM-20948 9轴运动传感器高速读取数据的工具（加速度计和陀螺仪的读取频率大于200Hz，磁力计的读取频率大于100Hz）。
 
 该库的核心代码由C++编写，并借助{\bfseries \itshape Pybind11}提供基于Python的API接口。该库还支持同时从多个I2C总线上的多个ICM-20948传感器读取数据。此外，只要没有地址冲突，它还支持在单个I2C总线上读取多个传感器的数据。然而，在这种情况下，由于I2C总线通信频率的限制，读取数据的速度可能会受到限制。
 
 除此之外，该库还基于{\bfseries \itshape Eigen3}线性代数运算库实现了扩展卡尔曼滤波（EKF）算法，并具有相当高的效率，能够支持不同传感器之间的实时相对姿态估计。
 
-\subsection{高性能实现}
+\subsection{库实现中的性能优化}
 \subsubsection{C++后端}
 通常，对各类传感器数据的读取与处理会交由嵌入式开发板来完成。嵌入式开发板的型号数量非常庞大，而且种类各异。各个厂商和供应商提供了许多不同类型的嵌入式开发板，以满足不同应用和需求。这些开发板可能基于不同的处理器架构，如ARM、x86、MIPS等，具有不同的处理能力和功能集。它们还可能针对特定的应用领域进行优化，如物联网（IoT）、工业自动化、医疗设备、智能家居等。
 
@@ -222,7 +220,7 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 
 为了实现在此类设备上对多种传感器进行实时、高速地数据读取与数据处理，最大限度利用硬件资源，C/C++往往会成为编写各类性能敏感程序的最佳选择。
 
-在为本次毕业设计项目而开发的核心库中，所有的核心控制逻辑与计算过程均由C++实现，包括但不限于对传感器、I2C总线的访问读取逻辑，卡尔曼滤波算法的实现，工作线程池的创建与管理等。此外，得益于C++对硬件和系统资源的控制能力，多线程编程模型也在开发之初就被纳入了考虑并被广泛使用以最大限度利用系统资源，进一步提升性能与效率。
+在为本次文而开发的核心库中，所有的核心控制逻辑与计算过程均由C++实现，包括但不限于对传感器、I2C总线的访问读取逻辑，卡尔曼滤波算法的实现，工作线程池的创建与管理等。此外，得益于C++对硬件和系统资源的控制能力，多线程编程模型也在开发之初就被纳入了考虑并被广泛使用以最大限度利用系统资源，进一步提升性能与效率。
 
 具体的实现细节与性能测试将会在本章中的之后几节详述
 \subsubsection{多线程编程模型设计与管理}
@@ -231,17 +229,17 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{library/multithreading-benefits.png}
-    \caption{\label{fig:multithreading-benefits}Multithreading Benefits}
+    \caption{\label{fig:multithreading-benefits}多线程编程的性能优势}
 \end{figure}
 
-在本毕业设计项目中，为了实现同时对多个传感器的高速数据读取与处理，多线程编程及线程池技术被充分应用，从而极大地提高了系统的整体性能与吞吐量，使之能够满足后续的动态传感器追踪与手势识别对数据处理速率的需求。
+在本文中，为了实现同时对多个传感器的高速数据读取与处理，多线程编程及线程池技术被充分应用，从而极大地提高了系统的整体性能与吞吐量，使之能够满足后续的动态传感器追踪与手势识别对数据处理速率的需求。
 
 部分实现细节如\autoref{fig:multithreading-implementation-details}所示，其中，每个Reading Thread与1条物理I2C总线绑定，每条物理I2C总线上连接有两个物理传感器，其数据会被相应的Reading Thread读取并放置于内存中的Sensor Data Buffer。随后，Calculating Thread会从Sensor Data Buffer中读取所需的数据并使用卡尔曼滤波算法计算出各个传感器的相对姿态。最后，计算得到的传感器相对姿态会被放置于内存中的Orientation Data Buffer。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{library/multithreading-implementation-details.png}
-    \caption{\label{fig:multithreading-implementation-details}Multithreading Implementation Details}
+    \caption{\label{fig:multithreading-implementation-details}多线程编程实现细节示意}
 \end{figure}
 
 主线程负责管理Reading Thread Pool及Calculating Thread Pool中thread的创建与销毁，并提供相应的API以供调用此库的程序读取所需的数据、间接管理相关的工作线程以及设置相关的行为参数（包括但不限于：各传感器读取速率、卡尔曼滤波参数等）。
@@ -254,19 +252,19 @@ ICM20948是一款高度集成的惯性测量单元（IMU），具有三轴加速
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{library/low-resource-consumption.png}
-    \caption{\label{fig:low-resource-consumption}Low Resource Consumption when Using the Library}
+    \caption{\label{fig:low-resource-consumption}使用库时较低的资源占用}
 \end{figure}
 
 \subsection{跨平台支持}
 \subsubsection{Python Wrapper}
 虽然C++的静态类型系统和直接内存访问使得它在计算密集型任务、底层系统开发和资源受限环境下具有性能和效率方面的优势。但在进行二次开发时，相比于Python，C++的开发效率相对而言非常低，因为其需要更多额外的工作来进行编码和调试，对于第三方用户的使用也非常不友好。
 考虑到第三方用户的使用及整体系统后续的非线性方程组计算、实时数据处理与传输、深度学习模型训练与推理等一系列复杂流程，我使用{\bfseries \itshape Pybind11}开源工具库将已有的核心C++代码封装为Python模块，并将相关的API暴露给Python（如\autoref{fig:combine-python-and-c++}所示），从而可以在Python环境中直接调用和使用此库。
-同时，这样做也可以充分发挥C++的高性能和Python的灵活性，大幅简化此毕设项目后续功能的开发、实现与验证。
+同时，这样做也可以充分发挥C++的高性能和Python的灵活性，大幅简化本文后续功能的开发、实现与验证。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{library/combine-python-and-c++.png}
-    \caption{\label{fig:combine-python-and-c++}Combine Python and C++ using Pybind11}
+    \caption{\label{fig:combine-python-and-c++}使用Pybind11将C++与Python结合}
 \end{figure}
 
 \subsubsection{在PyPI上发布此库}
@@ -279,19 +277,19 @@ PyPI (Python Package Index) 是Python社区的官方软件包仓库。它是一�
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{library/published-on-pypi.png}
-    \caption{\label{fig:published-on-pypi}The Library Published On PyPI}
+    \caption{\label{fig:published-on-pypi}将此库发布在PyPI上}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{library/install-the-library-using-pip.png}
-    \caption{\label{fig:install-the-library-using-pip}Install the Library Using pip}
+    \caption{\label{fig:install-the-library-using-pip}使用pip成功安装此库}
 \end{figure}
 
-\subsubsection{安装与测试手册}
-以下是供参考的安装此库的说明：
+\subsubsection{安装与测试}
+使用以下方法来对此库进行安装与测试
 
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 安装相关依赖} \\
 对于基于Ubuntu的系统，可以使用以下命令安装依赖项：
 \begin{lstlisting}[%
@@ -362,21 +360,21 @@ python3 -m pip install enhanced-icm20948
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{library/sensor-reading-module-implementation.png}
-    \caption{\label{fig:sensor-reading-module-implementation}Sensor Reading Module Implementation}
+    \caption{\label{fig:sensor-reading-module-implementation}数据读取模块实现细节}
 \end{figure}
 
 如本章前几节所述，此库使用了多线程编程模型及线程池技术，以最大限度利用系统资源，提升系统的整体性能与吞吐量。线程锁、原子量等技术也根据需要被相应地使用，以对临界区进行有效保护，确保整体程序的正确性。
 由于使用了{\bfseries \itshape Pybind11}对此库进行了Python封装，在实际Python环境中使用此库时，Reading Thread能够在后台自动地持续读取各传感器数据（通过相应API进行控制，之后几节会有介绍）。
 此外，此数据读取模块在实现时采用了"Producer-Consumer Pattern"模式，Python程序作为"Consumer"，能够通过相应的API读取库中暂存的传感器数据。
 
-\subsubsection{I2C Bus Multiplexer}
+\subsubsection{I2C总线多路复用模式}
 在某些 Linux 开发板上，多条物理I2C总线外设可能在内部由多路复用器（Multiplexer）实现。多路复用器通常由硬件支持，并由相应的设备树（Device Tree）描述。设备树中的多路复用器节点描述了如何将多个 I2C 设备连接到同一物理 I2C 总线上，并通过选择不同的通道或地址进行访问。
-对于此类开发板，在使用多个线程对多条I2C总线进行并发访问时，其正确性取决于开发板厂商所提供的设备驱动程序。在本次毕设项目进行的实验中，很多开发板厂商所提供的设备驱动程序无法正确处理多线程对I2C总线多路复用器的并发访问。
+对于此类开发板，在使用多个线程对多条I2C总线进行并发访问时，其正确性取决于开发板厂商所提供的设备驱动程序。在本文进行的实验中，很多开发板厂商所提供的设备驱动程序无法正确处理多线程对I2C总线多路复用器的并发访问。
 为此，此库针对此类情况提供了单线程多路复用数据读取功能。开启此功能时（通过相应的API，下一节会有介绍），只有一个Reading Thread会被创建，此Reading Thread会负责轮询各个I2C总线并读取连接在相应I2C总线上的传感器的数据。
 
-\subsubsection{User Interface}
+\subsubsection{获取传感器数据的用户接口}
 本节将会介绍此库中用于读取和控制传感器数据的部分重要API（Python Interface）：
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 创建传感器并将其加入到SensorBatch} \\
 可以使用如\autoref{code:create-sensor-and-sensor-batch}示例中的API创建传感器并将其加入到SensorBatch以便后续读取与管理
 \begin{lstlisting}[%
@@ -469,12 +467,12 @@ sensorBatch.stop_reading()
 \subsection{相对姿态计算}
 \subsubsection{四元数简介}
 四元数（Quaternion）是一种数学工具，用于表示旋转和方向。它扩展了传统的三维欧几里德空间中的复数概念，由一个实部和三个虚部组成，通常表示为$ q = a + bi + cj + dk$，其中$a,\ b,\ c,\ d$是实数，$i,\ j,\ k$是虚数单位。
-在本毕业设计项目中，四元数主要被用于通过卡尔曼滤波算法来表示指尖传感器与手背传感器的相对姿态（坐标系三维旋转变化），如\autoref{fig:rotation-represented-by-quarternion}所示
+在本文中，四元数主要被用于通过卡尔曼滤波算法来表示指尖传感器与手背传感器的相对姿态（坐标系三维旋转变化），如\autoref{fig:rotation-represented-by-quarternion}所示
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{library/rotation-represented-by-quarternion.png}
-    \caption{\label{fig:rotation-represented-by-quarternion}Rotation Represented by Quarternion}
+    \caption{\label{fig:rotation-represented-by-quarternion}使用四元数表示坐标系的旋转}
 \end{figure}
 
 \subsubsection{拓展卡尔曼滤波简介}
@@ -486,11 +484,11 @@ EKF通过对非线性系统模型进行线性化，使用一阶泰勒展开来�
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{library/extended-kalman-filter-step.png}
-    \caption{\label{fig:extended-kalman-filter-step}Extended Kalman Filter Algorithm}
+    \caption{\label{fig:extended-kalman-filter-step}拓展卡尔曼滤波算法原理}
 \end{figure}
 
 扩展卡尔曼滤波（EKF）的基本步骤如下：
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 初始化}: 初始化状态估计值和误差协方差矩阵
     \item {\bfseries 预测步骤（状态预测）}: 根据线性化的状态转移函数，通过预测模型来估计下一个时刻的状态
     \item {\bfseries 更新步骤（状态更新）}: 根据线性化的观测函数，通过测量值来修正状态估计，并更新误差协方差矩阵
@@ -502,7 +500,7 @@ EKF通过对非线性系统模型进行线性化，使用一阶泰勒展开来�
 因此，我们假设在这些特定事件（designated events, DEs）期间和这些特定事件之间可以使用3D IMU充分估计手背与手指尖之间的相对姿态~\cite{mainArticle1}。
 
 为了估计手指尖和手背之间的相对姿态，需要以一种最佳的方式将陀螺仪和加速度计的信息与特定事件（designated events, DEs）期间的额外信息进行融合。
-因此，本毕业设计项目中引入了扩展卡尔曼滤波（EKF）算法来估计手指尖和手背之间的相对姿态（即假设手指尖和手背之间的角速度和加速度是相同的，只是在不同的坐标系下表示）。
+因此，本文中引入了扩展卡尔曼滤波（EKF）算法来估计手指尖和手背之间的相对姿态（即假设手指尖和手背之间的角速度和加速度是相同的，只是在不同的坐标系下表示）。
 
 扩展卡尔曼滤波（EKF）算法中的process model基于相对角速度的积分，measurement model主要基于DEs（特定事件）期间的信息。
 DEs（特定事件）的质量被考虑在measurement variance中。
@@ -550,8 +548,6 @@ process model基于手背和手指尖之间在其各自坐标系中的相对角�
     \label{equ:de-share}
     \omega_h^h = q_{hf} \otimes \omega_f^f \otimes q_{hf}^{\star}
 \end{equation}
-where $\omega_x^y(x=h,f;\ y=h,f)$ is the angular velocity of an object in frame $x$ expressed in the coordinate frame of object $y$. 
-$h$ represents the hand and $f$ represents the finger tip.
 其中，$\omega_x^y(x=h,f;\ y=h,f)$代表某个在坐标系$x$中的对象的角速度在$y$坐标系下的表示。
 这里，$h$代表手背，$f$代表手指尖。
 
@@ -567,7 +563,6 @@ $h$ represents the hand and $f$ represents the finger tip.
     y_{acc,h}^h = q_{hf} \otimes y_{acc,f}^f \otimes q_{hf}^{\star} + (\lfloor w_h^h \rfloor_{\times} \lfloor w_h^h \rfloor_{\times} + \lfloor w_h^h \rfloor_{\times})r_{fh}^h  + \eta_c
 \end{equation}
 
-Subsequently, by combining \autoref{equ:shared-y-gyro-h-h} and \autoref{equ:shared-y-acc-h-h}, we can get the measurement model based on the sensor model and quaternion constraint:
 接下来，通过结合\autoref{equ:shared-y-gyro-h-h}和\autoref{equ:shared-y-acc-h-h}，我们可以得到基于sensor model和四元数约束的measurement model，如\autoref{equ:simplified-measurement-model}所示：
 \begin{equation}
     \label{equ:simplified-measurement-model}
@@ -596,7 +591,7 @@ Subsequently, by combining \autoref{equ:shared-y-gyro-h-h} and \autoref{equ:shar
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{library/kalman-module-implementation.png}
-    \caption{\label{fig:kalman-module-implementation}Kalman Module Implementation}
+    \caption{\label{fig:kalman-module-implementation}卡尔曼滤波模块实现细节}
 \end{figure}
 
 如本章前几节所述，此库使用了多线程编程模型及线程池技术，以最大限度利用系统资源，提升系统的整体性能与吞吐量。线程锁、原子量等技术也根据需要被相应地使用，以对临界区进行有效保护，确保整体程序的正确性。
@@ -611,9 +606,9 @@ Eigen是一个用于线性代数运算的C++模板库，提供了广泛的矩阵
 
 得益于Eigen库的引入和使用，卡尔曼滤波算法能以相当高的效率执行。在树莓派4B平台上运行时，此库能以较低的延时和资源占用完成传感器之间相对姿态的实时计算与更新（200Hz+）
 
-\subsubsection{用户接口}
+\subsubsection{获取相对姿态的用户接口}
 本节将会介绍此库中用于读取和控制传感器相对姿态数据的部分重要API（Python Interface）
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 开始计算相对姿态} \\
 可以使用如\autoref{code:start-calculating-thraed}中所示的API来开始计算指尖传感器与手背传感器的相对姿态：
 \begin{lstlisting}[%
@@ -695,7 +690,7 @@ sensorBatch.stop_estimating_orientation()
     \end{tabularx}
 \end{table}
 
-总体而言，毕设项目中开发的此库在各方面均达到了预期目标与要求，其高性能，高效率，易使用的特点为毕设项目后续的动态手指追踪与实时手势识别提供了可靠的支持。
+总体而言，本文中开发的此库在各方面均达到了预期目标与要求，其高性能，高效率，易使用的特点为本文后续的动态手指追踪与实时手势识别提供了可靠的支持。
 
 \cleardoublepage
 \section{相对位置计算与跟踪}
@@ -705,7 +700,7 @@ sensorBatch.stop_estimating_orientation()
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\linewidth]{magnet/dipole-model-of-a-magnet.png}
-    \caption{\label{fig:dipole-model-of-a-magnet}Dipole Model of a Magnet}
+    \caption{\label{fig:dipole-model-of-a-magnet}磁体的磁偶极子模型}
 \end{figure}
 
 \begin{equation}
@@ -737,20 +732,20 @@ $B_e^s$是包括地磁场和周围干扰在内的扰动磁场，$n_B$是测量�
 
 \subsection{永磁体分析与校准}
 为了保证后续手指追踪定位与手势识别的准确度，需要提前测量并标定永磁体的磁偶极矩强度，否则将无法通过相关的数学模型计算出手指相对于手背的位置，或者计算出的相对位置存在较大的偏差
-在本毕业设计项目中，为实现此目标，我自行设计了一套标定永磁体磁偶极矩强度的装置，进行了相关的数学建模与分析，并最终使用回归模型对毕设项目中所使用的圆柱体永磁体的磁偶极矩强度进行了测量。
+在本文中，为实现此目标，我自行设计了一套标定永磁体磁偶极矩强度的装置，进行了相关的数学建模与分析，并最终使用回归模型对本文中所使用的圆柱体永磁体的磁偶极矩强度进行了测量。
 测量装置如\autoref{fig:magnet-measure-device}所示：
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{magnet/magnet-measure-device.png}
-    \caption{\label{fig:magnet-measure-device}Magnetic Field Measurement Device}
+    \caption{\label{fig:magnet-measure-device}磁偶极矩强度测量装置}
 \end{figure}
 
 \subsubsection{数据采集与记录}
-为准确测定永磁体的磁偶极矩强度，本毕设项目使用如下方法测量并记录相关数据：
+为准确测定永磁体的磁偶极矩强度，本文使用如下方法测量并记录相关数据：
 
 首先，将一个磁传感器固定在实验室桌面上，并附上1张有距离刻度的测量纸。随后，按如下步骤进行测量并记录数据：
-\begin{enumerate}
+\begin{enumerate}[label=(\alph*)]
     \item 确认周围无其它磁场环境干扰后，用磁传感器测出当前的地磁强度并进行记录
     \item 在多个不同距离处测量永磁体在磁传感器位置的磁场感应强度并进行记录（使用带有距离刻度的测量纸进行读数）
 \end{enumerate}
@@ -760,7 +755,7 @@ $B_e^s$是包括地磁场和周围干扰在内的扰动磁场，$n_B$是测量�
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{magnet/permanent-magnet-analysis-g.png}
-    \caption{\label{fig:permanent-magnet-analysis-g}Permanent Magnet Analysis (Global)}
+    \caption{\label{fig:permanent-magnet-analysis-g}永磁体数据测量与分析}
 \end{figure} 
 
 在\autoref{fig:permanent-magnet-analysis-g}中，蓝色的点表示未去掉地磁场影响时磁传感器所测得的磁场感应强度的模长，红色的叉则表示去掉地磁场影响之后的相应结果。
@@ -787,14 +782,14 @@ $B_e^s$是包括地磁场和周围干扰在内的扰动磁场，$n_B$是测量�
     & \Longrightarrow \widehat{M_m} \approx 5.98 A\cdot m^2, \widehat{d} \approx 0.01m
     \end{aligned}
 \end{equation}
-由此可知，本毕设项目中使用的永磁体的磁偶极矩强度约为$5.98 A\cdot m^2$。
+由此可知，本文中使用的永磁体的磁偶极矩强度约为$5.98 A\cdot m^2$。
 
 上述回归计算的最终效果如\autoref{fig:dipole-model-regression-with-calibrated-magnetic-field-g}所示：
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{magnet/dipole-model-regression-with-calibrated-magnetic-field-g.png}
-    \caption{\label{fig:dipole-model-regression-with-calibrated-magnetic-field-g}Dipole Model Regression (Global)}
+    \caption{\label{fig:dipole-model-regression-with-calibrated-magnetic-field-g}磁偶极子模型回归计算与分析}
 \end{figure}
 
 相对误差分析如\autoref{fig:relative-error-rate-under-effect-of-geomagnetic-field}所示：
@@ -802,7 +797,7 @@ $B_e^s$是包括地磁场和周围干扰在内的扰动磁场，$n_B$是测量�
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{magnet/relative-error-rate-under-effect-of-geomagnetic-field.png}
-    \caption{\label{fig:relative-error-rate-under-effect-of-geomagnetic-field}Relative Error Under Geomagnetic Field}
+    \caption{\label{fig:relative-error-rate-under-effect-of-geomagnetic-field}地磁场影响下的相对误差}
 \end{figure}
 
 在指尖距离手背的有效距离范围内（0.06m-0.15m），地磁场的干扰可以被忽略（见\autoref{fig:relative-error-rate-under-effect-of-geomagnetic-field}）；
@@ -828,12 +823,12 @@ $B_e^s$是包括地磁场和周围干扰在内的扰动磁场，$n_B$是测量�
 \begin{figure}[H]
     \centering
     \includegraphics[width=.7\linewidth]{magnet/dipole-model-coordinate.png}
-    \caption{\label{fig:dipole-model-coordinate}Magnet in the Center of A Coordinate System}
+    \caption{\label{fig:dipole-model-coordinate}一个磁体位于中心的坐标系}
 \end{figure}
 
 显然，这是一个非线性优化问题，可以使用数值分析中的方法进行迭代求解。
 \subsubsection{手动计算雅各比矩阵}
-为快速、准确地求解上节中所描述的非线性方程组，在对此方程组及其解的特征进行分析后，本次毕设项目最终使用了Trust Region Reflective Algorithm来迭代求解此非线性方程组，从而计算出手指相对于手背的相对位置
+为快速、准确地求解上节中所描述的非线性方程组，在对此方程组及其解的特征进行分析后，本文最终使用了Trust Region Reflective Algorithm来迭代求解此非线性方程组，从而计算出手指相对于手背的相对位置
 为进一步提高此算法的收敛概率与收敛速度，该线性方程组的雅各比矩阵被手动求出（如\autoref{equ:manual-jacobian-matrix}所示）并应用于求解器中。
 \begin{equation}
     \label{equ:manual-jacobian-matrix}
@@ -864,7 +859,7 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \end{lstlisting}
 
 \subsection{实时性能}
-配合前几章中详述的此毕设项目中自行开发的库，使用Python中的Scipy包在树莓派4B平台上利用Trust Region Reflective Algorithm实时求解多个手指传感器相对于手背的相对位置，最终获得的相对位置更新速率大于50Hz。
+配合前几章中详述的本文中自行开发的库，使用Python中的Scipy包在树莓派4B平台上利用Trust Region Reflective Algorithm实时求解多个手指传感器相对于手背的相对位置，最终获得的相对位置更新速率大于50Hz。
 
 \cleardoublepage
 \section{动态追踪与手势识别}
@@ -875,7 +870,7 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{gesture/solved-r-theta-diagram.png}
-    \caption{\label{fig:solved-r-theta-diagram}Calculated Relative Position under Coordinate System}
+    \caption{\label{fig:solved-r-theta-diagram}某坐标系下计算得到的相对位置}
 \end{figure}
 
 以动态追踪两个传感器为例，其在一定时间内累积的定位轨迹图如\autoref{fig:two-sensors-tracking}所示。其中，横坐标代表$r_m \times \sin{\theta}$，纵坐标代表$r_m \times \cos{\theta}$，单位均为cm
@@ -883,23 +878,23 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{gesture/two-sensors-tracking.png}
-    \caption{\label{fig:two-sensors-tracking}Dynamic Tracking of Two Sensors}
+    \caption{\label{fig:two-sensors-tracking}针对两个传感器的动态追踪}
 \end{figure}
 
 
 \subsection{使用深度学习进行实时手势识别}
-本毕设项目的其中一个可选目标是实现对多种手势的实时识别。
+本文的其中一个可选目标是实现对多种手势的实时识别。
 前几章所做的主要工作及后续的实时手势识别流程如\autoref{fig:repeat-subsequent-program-structure}所示
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{software/subsequent-program-structure.png}
-    \caption{\label{fig:repeat-subsequent-program-structure}Subsequent Dynamic Tracking and Gesture Recognition}
+    \caption{\label{fig:repeat-subsequent-program-structure}后续的动态追踪及手势识别流程}
 \end{figure}
 
-在本毕设项目中，实时手势识别过程中的第一步是使用Raspberry Pi和I2C总线从实验手套读取传感器数据。传感器数据包括每个位于指尖的传感器相对于手背的相对位置信息。然后对这些数据进行处理和分析，以进行实时手势识别工作。
+在本文中，实时手势识别过程中的第一步是使用Raspberry Pi和I2C总线从实验手套读取传感器数据。传感器数据包括每个位于指尖的传感器相对于手背的相对位置信息。然后对这些数据进行处理和分析，以进行实时手势识别工作。
 
-本节的主要工作及结果强依赖于本毕业设计项目中前几章的成果，是基于整个自底向上构建的智能手指运动追踪系统的综合实际应用
+本节的主要工作及结果强依赖于本文中前几章的成果，是基于整个自底向上构建的智能手指运动追踪系统的综合实际应用
 总体而言，本节展示了在此毕设项目上努力而取得的综合成果，突出了智能手指运动追踪系统在实时手势识别应用中的实用性和有效性。
 
 \subsubsection{数据采集与记录}
@@ -909,7 +904,7 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{gesture/emoji-full-gesture.png}
-    \caption{\label{fig:emoji-full-gesture}15 Reference Emoji Gestures}
+    \caption{\label{fig:emoji-full-gesture}15个来自Emoji的参考手势}
 \end{figure}
 
 随后，戴上手套，分别作出相应的15个手势（参照选定的15种Emoji手势），并使用Python程序以固定50Hz的频率同时采集5个位于指尖的传感器的相对位置并记录。
@@ -918,20 +913,20 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=.5\linewidth]{gesture/collect-gesture-data.png}
-    \caption{\label{fig:collect-gesture-data}Collect Gesture Data}
+    \caption{\label{fig:collect-gesture-data}采集手势数据}
 \end{figure}
 
-最终采集到的手势数据以二进制Numpy Array的格式进行保存（如\autoref{fig:gesture-numpy-array}所示）：
+最终采集到的手势数据以二进制Numpy Array的格式进行保存（如\autoref{fig:binary-gesture-data}所示）：
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{gesture/binary-gesture-data.png}
-    \caption{\label{fig:binary-gesture-data}Saved Gesture Data}
+    \caption{\label{fig:binary-gesture-data}保存的手势数据}
 \end{figure}
 
 \subsubsection{数据预处理与数据集构建}
-在正式训练前，需要先对采集到的数据进行预处理并构建相应的训练数据集与测试数据集。在本毕设项目中，训练集与测试集的比例为8:2：
-\begin{enumerate}
+在正式训练前，需要先对采集到的数据进行预处理并构建相应的训练数据集与测试数据集。在本文中，训练集与测试集的比例为8:2：
+\begin{enumerate}[label=(\alph*)]
     \item {\bfseries 数据分帧}：考虑到手指与手的运动，为了减小最终识别结果的波动率，提高识别结果的准确度，在数据预处理的过程中取每25个采样点为一个时间片（0.5秒），采用overlap的方式对原始数据集进行分帧。后续的手势识别流程均基于时间片进行
     \item {\bfseries DCT}：为了更好的捕捉手势识别时手指与手的动态信息与特征，对上一步中切分完毕的时间片做1维DCT（Type-II），从而将原始的时域数据映射到频域（如\autoref{fig:partial-data-after-dct}所示）
     \item {\bfseries PCA降维}：PCA是一种常用的数据降维技术，它可以将高维数据集转换为低维空间数据集，同时保留原始数据集的最重要的信息。但由于本项目中数据集的特征维度本就不大（50维），故最终并没有使用PCA降维。尽管如此，考虑到后续可能会使用具有更高维度特征，保留更多信息量的数据采集方法，此步骤应在整体流程中进行保留。
@@ -942,20 +937,20 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{gesture/partial-data-after-dct.png}
-    \caption{\label{fig:partial-data-after-dct}Data After 1D-DCT (Type-II, Partial)}
+    \caption{\label{fig:partial-data-after-dct}经过1维DCT变换后的数据 (Type-II, 部分数据)}
 \end{figure}
 
 \subsubsection{实时手势识别}
 使用Pytorch构建一个简单的神经网络并使用前几节中构建的数据集进行训练，以最终执行实时手势识别任务（15分类）。由于数据的特征较为明显，故即使使用非常简单的全连接神经网络执行分类任务，其在训练集与测试集上的准确度也非常可观（如\autoref{fig:training-result}所示）。
-同时，考虑到此模型将会被部署在树莓派4B平台上（算力资源有限），为保证手势识别结果的实时性，最终模型的规模和计算量不应过大。故权衡之下，本毕设项目中没有使用更高级、更复杂的模型来进一步提升识别准确度。
+同时，考虑到此模型将会被部署在树莓派4B平台上（算力资源有限），为保证手势识别结果的实时性，最终模型的规模和计算量不应过大。故权衡之下，本文中没有使用更高级、更复杂的模型来进一步提升识别准确度。
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.8\linewidth]{gesture/training-result.png}
-    \caption{\label{fig:training-result}Training Result}
+    \caption{\label{fig:training-result}模型训练结果}
 \end{figure}
 
-最终，本毕设项目中的实时手势识别能够达到如下性能指标：
+最终，本文中的实时手势识别能够达到如下性能指标：
 \begin{itemize}
     \item 50Hz+ sample frequency (6 sensors simultaneously)
     \item 2Hz+ recognition frequency
@@ -969,24 +964,24 @@ result = least_squares((lambda x : equationFunction(x, magRou, magZ)), initX, ca
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{gesture/recognition-result0.png}
-    \caption{\label{fig:recognition-result0}Real-Time Gesture Recognition Result (Index Pointing)}
+    \caption{\label{fig:recognition-result0}实时手势识别结果 (Index Pointing)}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.6\linewidth]{gesture/recognition-result1.png}
-    \caption{\label{fig:recognition-result1}Real-Time Gesture Recognition Result (Thumbs Up)}
+    \caption{\label{fig:recognition-result1}实时手势识别结果 (Thumbs Up)}
 \end{figure}
 
 \cleardoublepage
 \section{总结}
-总体而言，本毕设项目所做的工作可以被分为4个关键的部分：
-\begin{enumerate}
+总体而言，本文所做的工作可以被分为4个关键的部分：
+\begin{enumerate}[label=(\alph*)]
     \item 开发一个使用C++后端的Python库，支持同时从多个ICM20948传感器高速读取数据（200Hz+）（并发布在GitHub和PyPI上）。
     \item 根据毕设项目的实际需求自行设计并打印了PCB电路板，以提高整体硬件系统的稳定性和集成度。
     \item 应用扩展卡尔曼滤波（EKF）算法和磁偶极子模型，动态地追踪和定位多个传感器的位置。
-    \item 应用深度学习技术，支持对各种自定义手势的实时识别。
+    \item 应用深度学习技术，支持对各种自定义手势的高准确率实时识别。
 \end{enumerate}
 
-综合起来，本毕设项目开发了一种利用多个磁传感器和惯性传感器的，低成本、高灵敏度、紧凑的智能手指运动追踪系统，并同时具有实时手势识别功能。此外，深度学习技术也被积极探索和应用，以提高实时手势识别的准确性。
-此毕设项目中多传感器配置和深度学习技术的结合，为提供具有较好的灵敏度、较高的准确性和较强的经济性的多功能手指运动追踪系统做出了贡献。该系统在虚拟现实、增强现实、人机交互和生物医学工程等各个领域都有潜在的应用前景。
+综合起来，本文开发了一种利用多个磁传感器和惯性传感器的，低成本、高灵敏度、紧凑的智能手指运动追踪系统，并同时具有实时手势识别功能。此外，深度学习技术也被积极探索和应用，以提高实时手势识别的准确性。
+本文同时结合了多传感器配置和深度学习技术，为最终设计出具有较好的灵敏度、较高的准确性和较强的经济性的多功能手指运动追踪系统提供了一定的基础参考。该系统在虚拟现实、增强现实、人机交互和生物医学工程等各个领域都有潜在的应用前景。

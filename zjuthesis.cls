@@ -72,7 +72,8 @@
     % undergraduate
     \ifthenelse{\equal{\Type}{thesis}}
     {
-        \newcommand{\TitleTypeName}{浙江大学本科生毕业论文}
+        \newcommand{\TitleTypeName}{浙江大学本科生毕业论文（设计）}
+        % \newcommand{\TitleTypeName}{}
     }
     {
         \newcommand{\TitleTypeName}{浙江大学本科生毕业设计}
